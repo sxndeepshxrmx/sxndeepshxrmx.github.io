@@ -1,11 +1,484 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>𝐒χɴ𝐃ᴇᴇ𝐏 𝐒ʜχ𝐑ᴍχ</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>𝐒χɴ𝐃ᴇᴇ𝐏 𝐒ʜχ𝐑ᴍχ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
+  <link rel="shortcut icon" href="img/sandeep.png" type="image/png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: #0b0b0b;
+      color: #fff;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    canvas.network {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 1;
+    }
+
+    /* Loader */
+    #loader {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at center, #1a0000 0%, #000 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      animation: bgPulse 6s infinite ease-in-out;
+    }
+
+    @keyframes bgPulse {
+      0%, 100% { background: radial-gradient(circle at center, #1a0000 0%, #000 100%); }
+      50% { background: radial-gradient(circle at center, #330000 0%, #000 100%); }
+    }
+
+    .kanji {
+      font-size: 4rem;
+      color: #e60000;
+      text-shadow: 0 0 20px #ff0000, 0 0 40px #600000;
+      animation: glitch 2s ease-in-out, glowPulse 2s infinite alternate;
+    }
+
+    @keyframes glitch {
+      0% { transform: scale(0.9); opacity: 0; }
+      50% { transform: scale(1.1); opacity: 1; }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes glowPulse {
+      0% { text-shadow: 0 0 10px #ff0000; }
+      100% { text-shadow: 0 0 30px #ff3333, 0 0 60px #660000; }
+    }
+
+    .slash {
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(to right, #ff0000, #660000, #ff0000);
+      animation: slashAnim 1s ease-in-out 2s forwards;
+      filter: blur(1px);
+      margin: 10px 0;
+    }
+
+    @keyframes slashAnim {
+      0% { transform: scaleX(0); opacity: 1; }
+      50% { transform: scaleX(1.5); opacity: 1; }
+      100% { transform: scaleX(1); opacity: 0; }
+    }
+
+    .blood-orbs {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .orb {
+      position: absolute;
+      width: 15px;
+      height: 15px;
+      background: #e60000;
+      border-radius: 50%;
+      box-shadow: 0 0 20px #ff0000;
+      animation: float 8s infinite ease-in-out;
+      opacity: 0.2;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(100vh) scale(0.5); opacity: 0.2; }
+      50% { transform: translateY(-50vh) scale(1.2); opacity: 0.6; }
+      100% { transform: translateY(-120vh) scale(0.4); opacity: 0; }
+    }
+
+    /* Main Content */
+    .container {
+      z-index: 2;
+      text-align: center;
+      background: rgba(20, 20, 20, 0.8);
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 0 30px rgba(255, 87, 51, 0.4);
+      width: 90%;
+      max-width: 600px;
+      animation: fadeIn 1.2s ease-in-out;
+    }
+
+    h1 {
+      font-size: 2.8em;
+      margin-bottom: 15px;
+      text-shadow: 0 0 20px #ff5733;
+    }
+
+    .profile-img {
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      border: 3px solid #ff4444;
+      margin: 10px 0 20px;
+      transition: 0.4s ease;
+    }
+
+    .profile-img:hover {
+      transform: scale(1.05);
+      border-color: #fff;
+    }
+
+    p {
+      margin-bottom: 10px;
+      font-size: 1.1em;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .inline-details {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin: 15px 0;
+      font-weight: 500;
+    }
+    .badges {
+      margin-top: 10px;
+    }
+    .badge {
+      background: #222;
+      color: #fff;
+      padding: 6px 12px;
+      margin: 5px;
+      border-radius: 5px;
+      display: inline-block;
+      font-size: 0.9em;
+      border: 1px solid #444;
+    }
+
+    .social-links {
+      margin-top: 20px;
+    }
+
+    .social-links a {
+      margin: 0 10px;
+      color: #ff5733;
+      font-size: 1.5em;
+      transition: all 0.3s ease;
+    }
+
+    .social-links a:hover {
+      color: #ff0000;
+      transform: scale(1.2);
+    }
+
+    #play-button {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 12px 20px;
+      font-size: 1em;
+      background: linear-gradient(45deg, #ff5733, #ff0000);
+      color: #fff;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      z-index: 10;
+      box-shadow: 0 0 15px rgba(255, 87, 51, 0.8);
+      transition: all 0.4s ease-in-out;
+    }
+
+    #play-button:hover {
+      background: #ff0000;
+      box-shadow: 0 0 25px rgba(255, 0, 0, 0.9);
+    }
+
+    footer {
+      position: absolute;
+      bottom: 10px;
+      font-size: 0.9em;
+      z-index: 3;
+      color: rgba(255,255,255,0.6);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fall {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(100vh); }
+    }
+  </style>
 </head>
 <body>
-    𝐒χɴ𝐃ᴇᴇ𝐏 𝐒ʜχ𝐑ᴍχ
-</body>
+  <canvas class="network"></canvas>
+  <!-- Loader -->
+  <div class="overlay"></div>
+
+  <!-- Loader -->
+  <div id="loader">
+    <div class="kanji">𝐈ɴ 𝐒ᴇχ𝐑ᴄʜ 𝐎ꜰ 𝐑ᴇ𝐕ᴇɴ𝐆ᴇ</div>
+    <div class="slash"></div>
+    <div class="blood-orbs">
+      <div class="orb" style="left: 10%; animation-delay: 0s;"></div>
+      <div class="orb" style="left: 25%; animation-delay: 1.2s;"></div>
+      <div class="orb" style="left: 40%; animation-delay: 0.8s;"></div>
+      <div class="orb" style="left: 60%; animation-delay: 1.6s;"></div>
+      <div class="orb" style="left: 75%; animation-delay: 0.4s;"></div>
+      <div class="orb" style="left: 90%; animation-delay: 1.8s;"></div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="container">
+    <h1>𝐒χɴ𝐃ᴇᴇ𝐏 𝐒ʜχ𝐑ᴍχ</h1>
+    <img class="profile-img" src="img/sandeep.png" alt="Profile Image">
+    <p>𝐈ɴ 𝐒ᴇχ𝐑ᴄʜ 𝐎ꜰ 𝐑ᴇ𝐕ᴇɴ𝐆ᴇ</p>
+    <div class="inline-details">
+      <span>ᴧɢᴇ: 𝟤𝟢</span>
+      <span>ʟᴏᴄᴧᴛɪᴏɴ: ᴅᴇʟʜɪ</span>
+    </div>
+    <div class="badges">
+      <span class="badge"><i class="fab fa-python"></i> ᴘʏᴛʜᴏɴ</span>
+      <span class="badge"><i class="fab fa-html5"></i> ʜᴛᴍʟ</span>
+      <span class="badge"><i class="fab fa-css3-alt"></i> ᴄꜱꜱ</span>
+      <span class="badge"><i class="fab fa-js"></i> ᴊꜱ</span>
+    </div>
+    <div class="social-links">
+      <a href="https://github.com/sxndeepshxrmx" target="_blank"><i class="fab fa-github"></i></a>
+      <a href="https://instagram.com/sxndeep.shxrmx" target="_blank"><i class="fab fa-instagram"></i></a>
+      <a href="https://www.threads.net/@sxndeep.shxrmx" target="_blank"><i class="fab fa-threads"></i></a>
+      <a href="https://www.snapchat.com/add/sxndeep.shxrmx" target="_blank"><i class="fab fa-snapchat-ghost"></i></a>
+      <a href="https://t.me/sxndeep_shxrmx" target="_blank"><i class="fab fa-telegram"></i></a>
+      <a href="https://x.com/sxndeepshxrmx" target="_blank"><i class="fab fa-x-twitter"></i></a>
+    </div>
+  </div>
+
+  <footer>© 𝟤𝟢𝟤𝟨 sᴧɴᴅᴇᴇᴘ sʜᴧʀᴍᴧ ᴧʟʟ ʀɪɢʜᴛs ʀᴇsᴇʀᴠᴇᴅ</footer>
+
+  <button id="play-button">▶ ᴘʟᴧʏ ᴍᴜꜱɪᴄ</button>
+  <audio id="background-audio" loop>
+    <source src="audio/music.mp3" type="audio/mp3" />
+    Your browser does not support the audio element.
+  </audio>
+
+  <script>
+    // Loader transition
+    window.addEventListener("load", () => {
+      const loader = document.getElementById("loader");
+      setTimeout(() => {
+        loader.style.transition = "opacity 1s ease";
+        loader.style.opacity = "0";
+        setTimeout(() => {
+          loader.style.display = "none";
+          document.body.style.overflow = "auto";
+        }, 1000);
+      }, 5000); // Delay in ms
+    });
+
+    // Music play/pause
+    const audio = document.getElementById("background-audio");
+    const btn = document.getElementById("play-button");
+    let isPlaying = false;
+
+    btn.addEventListener("click", () => {
+      if (isPlaying) {
+        audio.pause();
+        btn.textContent = '▶ ᴘʟᴧʏ ᴍᴜꜱɪᴄ';
+      } else {
+        audio.play();
+        btn.textContent = '❚❚ ᴘᴧᴜꜱᴇ ᴍᴜꜱɪᴄ';
+      }
+      isPlaying = !isPlaying;
+    });
+  
+/* ==========================================
+   ULTRA CINEMATIC NETWORK ENGINE (NO 3JS)
+   Next-Level Portfolio Background
+========================================== */
+
+const canvas = document.querySelector(".network");
+const ctx = canvas.getContext("2d");
+
+let particles = [];
+let mouse = { x: null, y: null };
+const DPR = window.devicePixelRatio || 1;
+
+const MAX_DISTANCE = 140;
+const BASE_PARTICLE_COUNT = window.innerWidth < 768 ? 90 : 160;
+
+let pulse = 0;
+let particleCount = BASE_PARTICLE_COUNT;
+
+// Retina fix
+function resizeCanvas() {
+  canvas.width = window.innerWidth * DPR;
+  canvas.height = window.innerHeight * DPR;
+  canvas.style.width = window.innerWidth + "px";
+  canvas.style.height = window.innerHeight + "px";
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.scale(DPR, DPR);
+}
+
+class Particle {
+  constructor() {
+    this.reset();
+  }
+
+  reset() {
+    this.x = Math.random() * window.innerWidth;
+    this.y = Math.random() * window.innerHeight;
+    this.depth = Math.random(); // fake 3D depth
+    this.size = 1 + this.depth * 2;
+    this.speed = 0.3 + this.depth * 0.7;
+
+    this.vx = (Math.random() - 0.5) * this.speed;
+    this.vy = (Math.random() - 0.5) * this.speed;
+  }
+
+  move() {
+    this.x += this.vx;
+    this.y += this.vy;
+
+    // Edge bounce
+    if (this.x < 0 || this.x > window.innerWidth) this.vx *= -1;
+    if (this.y < 0 || this.y > window.innerHeight) this.vy *= -1;
+
+    // Mouse repulsion
+    if (mouse.x !== null) {
+      const dx = this.x - mouse.x;
+      const dy = this.y - mouse.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      if (dist < 120) {
+        const force = (120 - dist) / 120;
+        this.x += dx * force * 0.05;
+        this.y += dy * force * 0.05;
+      }
+    }
+  }
+
+  draw() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+
+    // Cinematic glow
+    ctx.shadowColor = `rgba(255,40,40,${0.5 + this.depth})`;
+    ctx.shadowBlur = 20 * this.depth;
+
+    ctx.fillStyle = `rgba(255,60,60,${0.6 + this.depth * 0.4})`;
+    ctx.fill();
+
+    ctx.shadowBlur = 0;
+  }
+}
+
+function init() {
+  particles = [];
+  for (let i = 0; i < particleCount; i++) {
+    particles.push(new Particle());
+  }
+}
+
+function connect() {
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const distSq = dx * dx + dy * dy;
+
+      if (distSq < MAX_DISTANCE * MAX_DISTANCE) {
+        const distance = Math.sqrt(distSq);
+        const opacity = 1 - distance / MAX_DISTANCE;
+
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+
+        ctx.strokeStyle = `rgba(255,0,0,${opacity * 0.6})`;
+        ctx.lineWidth = 0.8;
+        ctx.stroke();
+      }
+    }
+  }
+}
+
+function drawBackgroundAura() {
+  const gradient = ctx.createRadialGradient(
+    window.innerWidth / 2,
+    window.innerHeight / 2,
+    0,
+    window.innerWidth / 2,
+    window.innerHeight / 2,
+    window.innerWidth
+  );
+
+  gradient.addColorStop(0, "rgba(60,0,0,0.3)");
+  gradient.addColorStop(1, "rgba(0,0,0,0.9)");
+
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+}
+
+function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  pulse += 0.02;
+  const breathing = Math.sin(pulse) * 0.5 + 0.5;
+
+  drawBackgroundAura();
+
+  particles.forEach(p => {
+    p.move();
+    p.draw();
+  });
+
+  connect();
+
+  requestAnimationFrame(animate);
+}
+
+// Mouse events
+window.addEventListener("mousemove", e => {
+  mouse.x = e.clientX;
+  mouse.y = e.clientY;
+});
+
+window.addEventListener("mouseleave", () => {
+  mouse.x = null;
+  mouse.y = null;
+});
+
+// Resize
+window.addEventListener("resize", () => {
+  resizeCanvas();
+  particleCount = window.innerWidth < 768 ? 90 : 160;
+  init();
+});
+
+resizeCanvas();
+init();
+animate();
+   </script>
+   </script>
+ </body>
+ </body>
 </html>
